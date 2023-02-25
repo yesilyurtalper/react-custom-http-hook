@@ -7,24 +7,24 @@ import useHttp from './hooks/use-http';
 function App() {
   const [tasks, setTasks] = useState([]);
 
-  const { isLoading, error, sendRequest: fetchTasks } = useHttp();
+  const transformTasks = (tasksObj) => {
+    const loadedTasks = [];
+
+    for (const taskKey in tasksObj) {
+      loadedTasks.push({ id: taskKey, text: tasksObj[taskKey].text });
+    }
+
+    setTasks(loadedTasks);
+  };
+
+  const [isLoading, error, sendGetRequest] = useHttp(false,null,transformTasks);
+
 
   useEffect(() => {
-    const transformTasks = (tasksObj) => {
-      const loadedTasks = [];
-
-      for (const taskKey in tasksObj) {
-        loadedTasks.push({ id: taskKey, text: tasksObj[taskKey].text });
-      }
-
-      setTasks(loadedTasks);
-    };
-
-    fetchTasks(
-      { url: 'https://react-http-6b4a6.firebaseio.com/tasks.json' },
-      transformTasks
+    sendGetRequest(
+      { url: 'https://alpery-582ef-default-rtdb.firebaseio.com/tasks.json' }
     );
-  }, [fetchTasks]);
+  }, []);
 
   const taskAddHandler = (task) => {
     setTasks((prevTasks) => prevTasks.concat(task));
@@ -37,7 +37,7 @@ function App() {
         items={tasks}
         loading={isLoading}
         error={error}
-        onFetch={fetchTasks}
+        onFetch={sendGetRequest.bind(null,{ url: 'https://alpery-582ef-default-rtdb.firebaseio.com/tasks.json' })}
       />
     </React.Fragment>
   );

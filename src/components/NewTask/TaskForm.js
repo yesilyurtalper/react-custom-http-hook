@@ -1,14 +1,13 @@
-import { useRef } from 'react';
+import { forwardRef } from 'react';
 
 import classes from './TaskForm.module.css';
 
-const TaskForm = (props) => {
-  const taskInputRef = useRef();
+const TaskForm = forwardRef((props,inputRef) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
 
-    const enteredValue = taskInputRef.current.value;
+    const enteredValue = inputRef.current.value;
 
     if (enteredValue.trim().length > 0) {
       props.onEnterTask(enteredValue);
@@ -17,10 +16,10 @@ const TaskForm = (props) => {
 
   return (
     <form className={classes.form} onSubmit={submitHandler}>
-      <input type='text' ref={taskInputRef} />
+      <input type='text' ref={inputRef} />
       <button>{props.loading ? 'Sending...' : 'Add Task'}</button>
     </form>
   );
-};
+});
 
 export default TaskForm;
